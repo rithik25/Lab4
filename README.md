@@ -1,5 +1,15 @@
 # Coding 1 Assignment
 
+## Prior Changes
+Saving a product was giving an error with the original code. This error was because the sellerID was not being added. The following code was added to fix this error:
+```
+statement = connection.prepareStatement("INSERT INTO Products VALUES (?, ?, ?, ?, ?)");
+statement.setString(2, product.getName());
+statement.setDouble(3, product.getPrice());
+statement.setDouble(4, product.getQuantity());
+statement.setInt(1, product.getProductID());
+statement.setInt(5, product.getSellerID());
+```
 ## Data Validation
 
 All the data validation changes are in ProductControlView.java.
@@ -60,4 +70,4 @@ try {
 }
 ```
 
-## Youtube Screen Recordings
+## Youtube Screen Recording
