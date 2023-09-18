@@ -4,7 +4,8 @@
 
 All the data validation changes are in ProductControlView.java.
 ### Checking if Product ID is not negative in saveProduct():
-'int productID;
+```
+int productID;
 try {
     productID = Integer.parseInt(txtProductID.getText());
     if (productID < 0) {
@@ -14,7 +15,8 @@ try {
 } catch (NumberFormatException e) {
     JOptionPane.showMessageDialog(null, "Invalid product ID! Please provide a valid product ID!");
     return;
-}'
+}
+```
 
 ## Youtube Screen Recordings
 
