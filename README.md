@@ -203,7 +203,7 @@ if (order.getLines().size() == 0) {
     return;
 }
 ```
-### Checking an OrderLine if it already exists in the UI:
+### Updating an OrderLine if it already exists in the UI:
 In the addProduct() function in OrderControlView.java:
 ```
 for (OrderLine orderLine : order.getLines()) {
