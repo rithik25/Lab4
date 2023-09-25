@@ -1,4 +1,4 @@
-# Coding 1 Assignment
+# Coding 2 Assignment
 
 ## Code changes to display current user logged in, in MainScreen:
 In MainScreen.java:
