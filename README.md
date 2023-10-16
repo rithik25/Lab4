@@ -1,241 +1,76 @@
-# Coding 2 Assignment
+# Coding 3 Assignment
 
-## Code changes to display current user logged in, in MainScreen:
-In MainScreen.java:
+## 1. ProductServer.java
+
+The `ProductServer` program is a server application responsible for handling client connections, processing requests, and interacting with the SQLite database.
+
+### Function to handle GET requests by the server:
 ```
-private JLabel username = new JLabel("No User");
-username.setFont(new Font("Sans Serif", Font.BOLD, 18));
-JPanel panelUser = new JPanel();
-panelUser.add(username);
-this.getContentPane().add(panelUser);
+    private static void handleGetRequest(int id, PreparedStatement selectStmt, PrintWriter out) throws SQLException {
+        selectStmt.setInt(1, id);
+        ResultSet result = selectStmt.executeQuery();
 
-public void updateUsername(String name) {
-    username.setText("Welcome " + name);
-}
-```
-In actionPerformed() function in LoginControlView.java:
-```
-Application.getInstance().getMainScreen().updateUsername(username);
-```
-
-## Code changes to add shipping address and credit card to an order:
-In Order.java:
-```
-public void setAddress(String buyerAddress) {
-    this.buyerAddress = buyerAddress;
-}
-
-public String getAddress() {
-    return buyerAddress;
-}
-
-public void setCard(String cardNum) {
-    this.cardNum = cardNum;
-}
-
-public String getCard() {
-    return cardNum;
-}
-```
-In makeOrder() function in OderControlView.java:
-```
-JPanel customerDetailsPanel = new JPanel();
-customerDetailsPanel.setLayout(new GridLayout(3, 3));
-
-JTextField customerAddress = new JTextField(30);
-customerDetailsPanel.add(new JLabel("Address to ship: "));
-customerDetailsPanel.add(customerAddress);
-
-JTextField customerCard = new JTextField(30);
-customerDetailsPanel.add(new JLabel("Credit Card Number: "));
-customerDetailsPanel.add(customerCard);
-
-int dialogReturn = JOptionPane.showConfirmDialog(null, customerDetailsPanel, "Enter your details: ", JOptionPane.OK_CANCEL_OPTION);
-
-if (dialogReturn == JOptionPane.OK_OPTION) {
-    String address = customerAddress.getText();
-    String card = customerCard.getText();
-
-    boolean isValid = true;
-    for (int i = 0; i < card.length(); i++) {
-        if (!Character.isDigit(card.charAt(i))) {
-            isValid = false;
+        if (!result.next()) {
+            out.println("Invalid Product ID.");
+        } else {
+            String productName = result.getString("Name");
+            double productPrice = result.getDouble("Price");
+            double productQuantity = result.getDouble("Quantity");
+            out.println("Name: " + productName);
+            out.println("Price: " + productPrice);
+            out.println("Quantity: " + productQuantity);
         }
     }
-
-    if (address.length() <= 0) {
-        JOptionPane.showMessageDialog(null, "Invalid address.");
-        return;
-    }
-
-    if (order.getLines().size() == 0) {
-        JOptionPane.showMessageDialog(null, "Your cart is empty.");
-        return;
-    }
-
-    if (isValid && card.length() == 16) {
-        order.setBuyerID(Application.getInstance().getCurrentUser().getUserID());
-        order.setCard(card);
-        order.setAddress(address);
-        order.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd MM:mm:ss")));
-        order.setTotalTax(order.getTotalCost() * 0.08);
-        Application.getInstance().getDataAdapter().saveOrder(order, createReceipt());
-    } else {
-        JOptionPane.showMessageDialog(null, "Invalid credit card number.");
-    }
-}
 ```
-
-## Code changes to generate a receipt for each order:
+### Function to handle UPDATE requests by the server:
 ```
-public String createReceipt() {
-    String receipt = "Order Receipt\n" + "Product ID\t|\t" + "Product Name\t|\t" + "Quantity\t|\t" + "Unit Price\t|\t" + "Total Cost\n";
+    private static void handleUpdateRequest(int id, String updatedName, double updatedPrice, double updatedQuantity, PreparedStatement updateStmt, PrintWriter out) throws SQLException {
+        updateStmt.setString(1, updatedName);
+        updateStmt.setDouble(2, updatedPrice);
+        updateStmt.setDouble(3, updatedQuantity);
+        updateStmt.setInt(4, id);
+        int numRows = updateStmt.executeUpdate();
 
-    for (OrderLine line : order.getLines()) {
-        receipt += "\t" + line.getProductID();
-        Product prod = Application.getInstance().getDataAdapter().loadProduct(line.getProductID());
-        receipt += "\t|\t" + prod.getName();
-        receipt += "\t|\t" + line.getQuantity();
-        receipt += "\t|\t" + prod.getPrice();
-        receipt += "\t|\t" + line.getCost() + "\n";
-        prod.setQuantity(prod.getQuantity() - line.getQuantity());
-        Application.getInstance().getDataAdapter().saveProduct(prod);
-    }
-
-    receipt += "Customer ID: " + order.getBuyerID() + "\n";
-    receipt += "Payed with	: " + order.getCard().substring(12, 16) + "\n";
-    receipt += "Customer Address: " + order.getAddress() + "\n";
-    receipt += "Order Date: " + order.getDate() + "\n";
-    receipt += "Subtotal: " + order.getTotalCost() + "\n";
-    receipt += "Taxes: " + order.getTotalTax() + "\n";
-    receipt += "Total Amount: " + (order.getTotalCost() + order.getTotalTax()) + "\n";
-    return receipt;
-}
-```
-## Code changes to save order details to database:
-In makeOrder() function in OrderControlView.java:
-```
-Application.getInstance().getDataAdapter().saveOrder(order, createReceipt());
-```
-In DataAdapter.java:
-```
-public boolean saveOrder(Order order, String receipt) {
-    try {
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?, ?)");
-        PreparedStatement getMaxOrderID = connection.prepareStatement("select MAX(orderID) from Orders");
-        ResultSet maxOrderID = getMaxOrderID.executeQuery();
-        
-        statement.setInt(1, maxOrderID.getInt(1) + 1);
-        statement.setInt(2, order.getBuyerID());
-        statement.setString(3, order.getCard());
-        statement.setString(4, order.getAddress());
-        statement.setString(5, order.getDate());
-        statement.setDouble(6, order.getTotalCost());
-        statement.setDouble(7, order.getTotalTax());
-
-        statement.execute();    
-        statement.close();
-
-        statement = connection.prepareStatement("INSERT INTO OrderLine VALUES (?, ?, ?, ?)");
-
-        for (OrderLine line: order.getLines()) { 
-            statement.setInt(1, maxOrderID.getInt(1) + 1);
-            statement.setInt(2, line.getProductID());
-            statement.setDouble(3, line.getQuantity());
-            statement.setDouble(4, line.getCost());
-
-            statement.execute();    
-          
+        if (numRows > 0) {
+            out.println("Product updated successfully.");
+        } else {
+            out.println("Failed to update product.");
         }
-        statement.close();
-        
-        receipt = "Order ID: " + (maxOrderID.getInt(1) + 1) + "\n" + receipt;
-        statement = connection.prepareStatement("INSERT INTO Receipt VALUES (?, ?)");
-        statement.setInt(1, maxOrderID.getInt(1) + 1);
-        statement.setString(2, receipt);
-        statement.execute();
-        statement.close();
-        JOptionPane.showMessageDialog(null, receipt);
-        return true;
     }
-    catch (SQLException e) {
-        System.out.println("Database access error!");
-        e.printStackTrace();
-        return false;
-    }
-}
 ```
-## Data Validation
-
-### Checking if Card Number is valid:
-In the makeOrder() function in OrderControlView.java:
-```
-boolean isValid = true;
-for (int i = 0; i < card.length(); i++) {
-    if (!Character.isDigit(card.charAt(i))) {
-        isValid = false;
-    }
-}
-if (isValid && card.length() == 16) {
-    order.setBuyerID(Application.getInstance().getCurrentUser().getUserID());
-    order.setCard(card);
-    order.setAddress(address);
-    order.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd MM:mm:ss")));
-    order.setTotalTax(order.getTotalCost() * 0.08);
-    Application.getInstance().getDataAdapter().saveOrder(order, createReceipt());
-} else {
-    JOptionPane.showMessageDialog(null, "Invalid credit card number.");
-}
-```
-### Checking if the Address field is not empty:
-In the makeOrder() function in OrderControlView.java:
-```
-if (address.length() <= 0) {
-    JOptionPane.showMessageDialog(null, "Invalid address.");
-    return;
-}
-```
-### Checking if Shopping Cart is not empty:
-In the makeOrder() function in OrderControlView.java:
-```
-if (order.getLines().size() == 0) {
-    JOptionPane.showMessageDialog(null, "Your cart is empty.");
-    return;
-}
-```
-### Updating an OrderLine if it already exists in the UI:
-In the addProduct() function in OrderControlView.java:
-```
-for (OrderLine orderLine : order.getLines()) {
-    if (orderLine.getProductID() == product.getProductID()) {
-        line = orderLine; 
-        line.setQuantity(line.getQuantity() + quantity);
-        line.setCost(line.getQuantity() * product.getPrice());
-        order.setTotalCost(order.getTotalCost() + (quantity * product.getPrice())); 
-        break;
-    }
-}
-
-if (line == null) {
-    line = new OrderLine();
-    line.setOrderID(order.getOrderID());
-    line.setProductID(product.getProductID());
-    line.setQuantity(quantity);
-    line.setCost(quantity * product.getPrice());
-    order.getLines().add(line);
-    order.setTotalCost(order.getTotalCost() + line.getCost());
-}
 
 
-for (int i = 0; i < items.getRowCount(); i++) {
-    if (items.getValueAt(i, 0).equals(product.getProductID())) {
-        items.setValueAt(line.getQuantity(), i, 3);
-        items.setValueAt(line.getCost(), i, 4);
-        labTotal.setText("Total: $" + order.getTotalCost());
-        return; 
-    }
-}
-```
+## 2. QueryClient.java
 
-## YouTube Screen Recording
-https://youtu.be/OM_uZb9YVB8
+The `QueryClient` program is a client application that allows users to retrieve product information from the ProductServer.
+
+### How it works:
+- The client program prompts the user to enter a product ID.
+- It establishes a connection with the ProductServer running on the localhost and port 7777.
+- The client sends a GET request to the server, along with the product ID.
+- The server processes the request and responds with the product's name, price, and quantity.
+- The client displays this information to the user.
+
+## 3. UpdateClient.java
+
+The `UpdateClient` program is a client application for updating product information on the ProductServer.
+
+### How it works:
+- The client program prompts the user to enter a product ID, the new product name, price, and quantity.
+- It establishes a connection with the ProductServer running on the localhost and port 7777.
+- The client sends an UPDATE request to the server, along with the formatted string containing the product ID, updated name, price, and quantity.
+- The server processes the request and attempts to update the product in the database.
+- The client receives a response from the server, indicating whether the update was successful or not.
+
+## 4. WebServer.java
+
+The `WebServer` program acts as a simple web server, allowing users to access product information via web browsers or HTTP clients.
+
+### How it works:
+- The server listens on the specified port (default is 8080) for incoming HTTP requests.
+- When a request is received, it extracts the URI from the request to determine if it matches the pattern "/product/{productID}".
+- If the URI matches, the server queries the SQLite database for the product details based on the product ID provided in the URI.
+- It generates an HTML response containing the product's information, such as name, price, and quantity.
+- If the product is not found, it returns a 404 error response.
+
+
