@@ -11,7 +11,7 @@ The function first calls the loadProduct() function to see if the product alread
 ### saveOrder() Function:
 The function establishes a connection to the server. It then sends a "SAVE_ORDER" request to the server and then subsequently sends the order information to the server to save in the Order table and the receipt string to save in the Receipt table. It then goes through each orderline and sends a "SAVE_ORDERLINE" request to the server and then subsequently sends the orderline information to be stored in the orderline table.
 
-### loadProduct() Function:
+### loadUser() Function:
 The function establishes a connection to the server. It then sends a "GET_USER" request to receive user information based on a username and a password. It then receives the user details from the server and creates User object with this information, or returns null if the product is not found.
 
 ## Addition of Server.java:
