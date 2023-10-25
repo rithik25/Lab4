@@ -30,6 +30,5 @@ This request expects the buyer ID, card, address, date, cost, and taxes of an or
 This request expects the order ID, product ID, quantity, and cost of an orderline and inserts the information of the orderline in the database.
 
 ## YouTube Video:
-https://youtu.be/jqeAQ9ELHbY
-
+https://youtu.be/gNjJx8KWJc4
 
