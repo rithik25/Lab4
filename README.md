@@ -8,7 +8,7 @@ The `ProductServer` program is a server application responsible for handling cli
 The RequestHandler class implements the HttpHandler interface to handle incoming HTTP requests for the "/product" endpoint.
 
 ### handle() Function:
-This function handles the API request by checking their method (either GET or PUT) and calls the appropriate function (handleGetRequest or handleUpdateRequest) to process the request.
+This function handles the API request by checking its method (either GET or PUT) and calls the appropriate function (handleGetRequest or handleUpdateRequest) to process the request.
 
 ### handleGetRequest() Function:
 This function handles a GET API request to get the information of a particular product depending on the product ID. It extracts the product ID from the request's URI and queries the database to receive the name, quantity, and price of a product. It formats this data either as JSON or HTML depending on the format type requested in the header and sends it back to the client.
