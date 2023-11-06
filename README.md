@@ -7,17 +7,17 @@ The `ProductServer` program is a server application responsible for handling cli
 ### RequestHandler Class:
 The RequestHandler class implements the HttpHandler interface to handle incoming HTTP requests for the "/product" endpoint.
 
-### saveProduct() Function:
-The function first calls the loadProduct() function to see if the product already exists in the database. If the product already exists, the function sends an "UPDATE_PRODUCT" request to the server and then subsequently sends the product information to the server to update. If the product does not exist, the function sends an "INSERT_PRODUCT" request to the server and then subsequently sends the product information to the server to insert into the database.
-
 ### handle() Function:
 This function handles the API request by checking the method (either GET or PUT) and calls the appropriate function (handleGetRequest or handleUpdateRequest) to process the request.
 
-### handleGetRequest Function:
+### handleGetRequest() Function:
 This function handles a GET API request to get the information of a particular product depending on the product ID. It extracts the product ID from the request's URI and queries the database to receive the name, quantity, and price of a product. It formats this data either as JSON or HTML depending on the format type requested in the header and sends it back to the client.
 
-### handleupdateRequest Function:
+### handleupdateRequest() Function:
 This function handles a PUT API request to update the information of a particular product. It extracts the product ID, name, quantity, and price from the request and updates the corresponding product's information. It sends an appropriate response depending on the success or failure of the operation.
+
+### sendResponse() Function:
+After the response is processed by handleGetRequest or handleUpdateRequest, this function sends an HTTP response back to the client.
 
 ## Clients:
 
