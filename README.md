@@ -1,4 +1,4 @@
-# Coding 6 Assignment
+# Coding 5 Assignment
 This assignment involved updating the code from coding assignment 3 to make it RESTful. The following are the updates and additions:
 
 ## Server: ProductServer.java:
@@ -28,5 +28,5 @@ The `QueryClient` program is a client application that allows users to retrieve 
 The `UpdateClient` program is a client application for updating product information on the ProductServer. The user inputs the product information either in JSON or HTML format and the program receives status if the update was successful or not.
 
 ## YouTube Video:
-https://youtu.be/gNjJx8KWJc4
+https://youtu.be/3QAcjRpjt1g
 
