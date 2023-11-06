@@ -1,33 +1,31 @@
-# Coding 4 Assignment
-This assignment involved updating the code from coding assignment 2 to utilize a client-server system. The following are the updates and additions:
+# Coding 6 Assignment
+This assignment involved updating the code from coding assignment 3 to make it RESTful. The following are the updates and additions:
 
-## Changes to DataAdapter.java:
-### loadProduct() Function:
-The function establishes a connection to the server. It then sends a "GET_PRODUCT" request to receive product information based on an ID. It then receives the product details from the server and creates a Product object with this information, or returns null if the product is not found.
+## Server: ProductServer.java:
+The `ProductServer` program is a server application responsible for handling client connections, processing requests, and interacting with the SQLite database.
+
+### RequestHandler Class:
+The RequestHandler class implements the HttpHandler interface to handle incoming HTTP requests for the "/product" endpoint.
 
 ### saveProduct() Function:
 The function first calls the loadProduct() function to see if the product already exists in the database. If the product already exists, the function sends an "UPDATE_PRODUCT" request to the server and then subsequently sends the product information to the server to update. If the product does not exist, the function sends an "INSERT_PRODUCT" request to the server and then subsequently sends the product information to the server to insert into the database.
 
-### saveOrder() Function:
-The function establishes a connection to the server. It then sends a "SAVE_ORDER" request to the server and then subsequently sends the order information to the server to save in the Order table and the receipt string to save in the Receipt table. It then goes through each orderline and sends a "SAVE_ORDERLINE" request to the server and then subsequently sends the orderline information to be stored in the orderline table.
+### handle() Function:
+This function handles the API request by checking the method (either GET or PUT) and calls the appropriate function (handleGetRequest or handleUpdateRequest) to process the request.
 
-### loadUser() Function:
-The function establishes a connection to the server. It then sends a "GET_USER" request to receive user information based on a username and a password. It then receives the user details from the server and creates User object with this information, or returns null if the product is not found.
+### handleGetRequest Function:
+This function handles a GET API request to get the information of a particular product depending on the product ID. It extracts the product ID from the request's URI and queries the database to receive the name, quantity, and price of a product. It formats this data either as JSON or HTML depending on the format type requested in the header and sends it back to the client.
 
-## Addition of Server.java:
-Server.java contains the implementation for the following requests:
-### GET_PRODUCT
-This request expects a product ID and sends back the product name, price, and quantity.
-### GET_USER
-This request expects a username and password and sends back the user ID, username, password, and display name of the user.
-### UPDATE_PRODUCT
-This request expects the product name, price, and quantity and updates the information of the product in the database.
-### INSERT_PRODUCT
-This request expects the product ID, name, price, and quantity and inserts the information of the product in the database.
-### SAVE_ORDER
-This request expects the buyer ID, card, address, date, cost, and taxes of an order and inserts the information of the order in the database.
-### SAVE_ORDERLINE
-This request expects the order ID, product ID, quantity, and cost of an orderline and inserts the information of the orderline in the database.
+### handleupdateRequest Function:
+This function handles a PUT API request to update the information of a particular product. It extracts the product ID, name, quantity, and price from the request and updates the corresponding product's information. It sends an appropriate response depending on the success or failure of the operation.
+
+## Clients:
+
+###  QueryClient.java
+The `QueryClient` program is a client application that allows users to retrieve product information from the ProductServer.
+
+## UpdateClient.java
+The `UpdateClient` program is a client application for updating product information on the ProductServer.
 
 ## YouTube Video:
 https://youtu.be/gNjJx8KWJc4
