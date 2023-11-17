@@ -1,4 +1,4 @@
-# Coding 5 Assignment
+# Coding 6 Assignment
 This assignment involved updating the code from coding assignment 2 to use cloud-based NoSQL databases instead of an SQL database.
 
 ## Databases
