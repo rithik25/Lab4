@@ -47,5 +47,5 @@ This function takes in an `order` object and a `receipt` string. It finds the ma
 This function takes in `username` and `password` parameters and searches the Redis database for key `user:username`. If the key is found it retrieves the user data from the database and compares the password of the user to the provided one. If passwords match, the function creates a user object from the data and returns the user object. 
 
 ## YouTube Video:
-https://youtu.be/3QAcjRpjt1g
+https://youtu.be/N8-1VplR4_s
 
