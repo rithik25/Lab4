@@ -35,7 +35,7 @@ dataAdapter = new DataAdapter(connection);
 
 ### DataAdapter.java:
 #### loadProduct() Function:
-This function takes in an `id` parameter and searches the Redis database for key `product:id`. If the key is found it retrieves the product data from the database and, creates a product object from it and returns the product object. If the key is not found then it returns null.
+This function takes in an `id` parameter and searches the Redis database for key `product:id`. If the key is found it retrieves the product data from the database and creates a product object from it and returns the product object. If the key is not found then it returns null.
 
 #### saveProduct() Function:
 This function takes in a `product` object and inserts it into the Redis database. If the product with the same ID already exists in the database then it updates the information. If it doesn't exist then it creates a new key and inserts the data under that key.
